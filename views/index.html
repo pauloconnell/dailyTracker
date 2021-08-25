@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  
+   <head>
+      <title>Daily Pattern Tracker </title>
+      <link rel="shortcut icon" href="https://cdn.hyperdev.com/us-east-1%3A52a203ff-088b-420f-81be-45bf559d01b1%2Ffavicon.ico" type="image/x-icon"/>
+      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+      <link href="style.css" rel="stylesheet" type="text/css">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+   </head>
+
+   <body>
+      <div class="container">
+         <center><h1 id="title">Daily Pattern Tracker</h1><br>
+           <hr>
+        <span class="smooth">1)Create your user id/name in the <b>database</b> <br/>
+          2) with your unique userID and name, add optional time/comments and hit submit to record.
+          3) create API endpoint to recieve user id and return all user data   /API/Daily counts
+          4) create web page to display all user data 
+        Back End <b>API</b> set up to be queried with parameters as described at bottom of page.
+             </span></center>
+        <hr><center>
+          <form action="/api/exercise/new-user" method="post" id="form1" >
+            <center> <h3>Create a New User</h3>
+            <p><code>Enter User Name and you will recieve your unique userID</code></p></center>
+            <input id="uname" type="text" name="username" placeholder="username" required>
+            <input type="submit" value="Submit">
+          </form>
+          <form action="/api/exercise/add" method="post" id="form2">
+            <center><h3>Record Occurance - optional to add details</h3>
+            <p><code>Use your unique userID to log your exercises</code></p></center>
+            <input id="uid" type="text" name="userId" placeholder="userId*" required>
+            <input id="desc" type="text" name="description" placeholder="description*">
+            <input id="dur" type="text" name="duration" placeholder="duration* (mins.)">
+            <input id="dat" type="text" name="date" placeholder="time - auto set to now">
+            <input type="submit" value="Submit">
+          </form>
+        </center>
+        <hr><center><br>
+          
+        <div id="info">
+          
+       
+            <p ><span class="smooth"><strong>ADVANCED USERS: API Query syntax for exercise log: </strong></span><br><code>GET /api/exercise/log?{userId}[&amp;from][&amp;to][&amp;limit]</code></p>
+          <span class="smooth"><strong>{ }</strong> = required, <strong>[ ]</strong> = optional
+          <strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> = number</span>
+        <br><hr><br>
+          
+        <span class="smooth"><a id="myButton" href="/api/exercise/users/">
+            To get an Array of users get: /api/exercise/users/  OR CLICK HERE
+        </a><br><br><hr><br>
+        <a id="ExersisesButton" href="/api/exercise/log/">
+            To get a list of exercises get: /api/exercise/log/  OR CLICK HERE
+        </a>
+        </span>
+        </div>
+        </center>
+      </div>
+   </body>
+
+</html>
