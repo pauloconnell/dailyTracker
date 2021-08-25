@@ -1,7 +1,7 @@
 {
-  "name": "fcc-exercise-tracker",
+  "name": "daily-tracker",
   "version": "0.1.0",
-  "description": "A REST API project, part of Free Code Camp's curriculum",
+  "description": "A REST API project, Tracking daily occurances",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -16,7 +16,8 @@
     "node": "^13.11.0",
     "connect-mongo": "^3.2.0",
     "express-validator": "^6.6.0",
-    "express-ws": "^5.0.2"
+    "express-ws": "^5.0.2",
+    "dotenv": "^10.0.0"
   },
   "engines": {
     "node": "10.17.0"

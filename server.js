@@ -6,15 +6,25 @@ const { body, validationResult } = require("express-validator");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const shortid = require("shortid");
+require("dotenv").config();
 var ourUserArray = []; // this will hold our users from DB
 var exerciseObject = {};
 var finalDocArray = [];
 
 //connect to DB
-mongoose.connect(process.env.DB_URI, {
-  useNewUrlParser: true,
-  useCreateIndex: true
-});
+mongoose.connect(
+  process.env.DB_URI2,
+  {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+  }
+);
+console.log("mongoose is: " + mongoose.connection.readyState);
+console.log(
+  "readyState codes are:   0: disconnected      1: connected  2: connecting    3: disconnecting "
+);
+//console.log("ENV IS ", process.env.DB_URI2);
 
 // Make Mongoose use `findOneAndUpdate()`. Note that this option is `true` by default, you need to set it to false.
 mongoose.set("useFindAndModify", false);
@@ -34,7 +44,8 @@ var logSchema = new mongoose.Schema({
       dailyCount: Number,
       description: String,
       duration: Number,
-      date: String
+      date: String, 
+      time: Number
     }
   ]
 });
@@ -262,25 +273,25 @@ app.post("/api/exercise/add", async function(req, res, next) {
   var dateString;
   var timeString;
   var username;
-  var { userId, description, duration, date } = req.body;
+  var { userId, description, duration, time } = req.body;
 
-  if (!userId || !description || !duration) {
+  if (!userId ) {
     res.send(
-      "User ID, Description and Duration are required fields - please enter values...hit refresh to continue"
+      "User ID is required field - please enter(create new user will retrieve forgotten userid)...hit refresh to continue"
     );
   }
   console.log("req.body is " + JSON.stringify(req.body));
-  if (+duration == NaN) {
-    // use the Unary Operator to covert type to Number
-    return res.send("please enter proper duration in minutes ");
+  if (!duration) {
+    // use the Unary Operator + to covert type to Number
+    duration=0;
   } else duration = parseInt(duration);
-  console.log("Date is " + date);
-  if (date == null || date == "") {
-    date = new Date();
+  console.log("Time is " + time);
+  if (time == null || time == "") {
+    time = new Date();
   }
-  classDate = new Date(date);
+  classDate = new Date(time);
   dateString = classDate.toString();
-  timeString = classDate.getHours();
+  timeString = classDate.getUTCHours()-7;
 
   console.log("this should be a string " + dateString);
   if (dateString == "Invalid Date")
@@ -292,6 +303,9 @@ app.post("/api/exercise/add", async function(req, res, next) {
     date: dateString.substr(0, 15),
     time: timeString
   };
+  
+  console.log(newLog);
+  
   // check if we have this user
   getUserName(userId, async function(err, result) {
     if (err) console.log(err);
@@ -325,8 +339,8 @@ app.post("/api/exercise/add", async function(req, res, next) {
         description: result.log[result.count - 1].description,
         duration: result.log[result.count - 1].duration,
         _id: userId,
-        date: dateString.substr(0, 15),
-        time: dateString.getHours
+        date: result.log[result.count - 1].date,
+        time: result.log[result.count - 1].time
       });
     }
   });
