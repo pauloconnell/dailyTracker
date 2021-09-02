@@ -12,14 +12,11 @@ var exerciseObject = {};
 var finalDocArray = [];
 
 //connect to DB
-mongoose.connect(
-  process.env.DB_URI2,
-  {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true
-  }
-);
+mongoose.connect(process.env.DB_URI2, {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true
+});
 console.log("mongoose is: " + mongoose.connection.readyState);
 console.log(
   "readyState codes are:   0: disconnected      1: connected  2: connecting    3: disconnecting "
@@ -44,7 +41,7 @@ var logSchema = new mongoose.Schema({
       dailyCount: Number,
       description: String,
       duration: Number,
-      date: String, 
+      date: String,
       time: Number
     }
   ]
@@ -96,7 +93,7 @@ var existingUser = false;
 // get users id from username: called at 315
 async function getUserId(username, done) {
   existingUser = false;
-  let ourId;
+  var ourId;
   await exerciselogDB
     .findOne({ username: username }) //find existing, else it's new user })
     .exec()
@@ -127,7 +124,7 @@ async function getAllUsers(done) {
   try {
     console.log("line 107 userlist found"); //+ Object.keys(userList))=num; //userList[Object.keys(userList)[1]])=obj@[1];
     console.log(
-      "line 113 userlist 3rd element is= " + JSON.stringify(userList[3])
+      "line 113 userlist 1st element is= " + JSON.stringify(userList[0])
     );
     done(null, userList);
   } catch (err) {
@@ -195,10 +192,15 @@ async function saveExercise(userId, log, done) {
       console.log("line 186" + err);
       done(err);
     } else {
+      console.log("line 195", data);
+      // if (data.log[data.log.length - 1].date == log.date) {
+      //   console.log("matched date");
+      // } else {
+      // }
       data.log.push(log);
       data.count++;
       data.save((err, data) => {
-        if (err) console.log("err at 194" + err);
+        if (err) console.log("err at 194" + err + log);
         return done(null, data);
       });
     }
@@ -271,11 +273,10 @@ app.get("/api/exercise/users/", async function(req, res) {
 app.post("/api/exercise/add", async function(req, res, next) {
   var classDate;
   var dateString;
-  var timeString;
   var username;
-  var { userId, description, duration, time } = req.body;
+  var { userId, description, duration, time, userName2 } = req.body;
 
-  if (!userId ) {
+  if (!userId) {
     res.send(
       "User ID is required field - please enter(create new user will retrieve forgotten userid)...hit refresh to continue"
     );
@@ -283,46 +284,74 @@ app.post("/api/exercise/add", async function(req, res, next) {
   console.log("req.body is " + JSON.stringify(req.body));
   if (!duration) {
     // use the Unary Operator + to covert type to Number
-    duration=0;
+    duration = 0;
   } else duration = parseInt(duration);
-  console.log("Time is " + time);
+  console.log("Time entered is " + time);
+  
+  var d = new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles"})
+  //const date = new Date().toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' });
+//const time = new Date().toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' });
+console.log("new date is ",d);
+  //classDate = d.toLocaleString();
   if (time == null || time == "") {
-    time = new Date();
+    time = d.substr(10);
+    console.log("sorting time ",d,time);
+    time = time.substring(0, 2);
+        console.log("sorting time ",d,time);
+    time = +time; // uniary opperator to covert to num
   }
-  classDate = new Date(time);
-  dateString = classDate.toString();
-  timeString = classDate.getUTCHours()-7;
-
-  console.log("this should be a string " + dateString);
-  if (dateString == "Invalid Date")
-    return res.send("invalid date - Please try again");
+ // dateString = classDate.toString();
+console.log("sorting time ",d,time);
+  console.log("this should be a string " + d);
+  if (d == "Invalid Date")
+    return res.send("invalid time - Please try again");
   var newLog = {
     id: userId,
     description: description,
     duration: duration,
-    date: dateString.substr(0, 15),
-    time: timeString
+    date: d,
+    time: time
   };
-  
-  console.log(newLog);
-  
-  // check if we have this user
-  getUserName(userId, async function(err, result) {
-    if (err) console.log(err);
-    else {
-      // console.log("success at 308"+result);
-      if (result) {
-        username = result;
-        //   console.log(result +"Result at line 307");
-      }
-      if (result == null) {
-        // ie. this userID doesn't exist yet  - to pass test, must handle this:
-        return res.send("Please create profile before adding exercise log");
-        // could easily generate userId and register User, but Not Required so sticking to requirements
-      }
-    }
-  });
 
+  console.log(newLog);
+
+  // check if we have this user
+  if (!username) {
+    getUserName(userId, async function(err, result) {
+      if (err) console.log(err);
+      else {
+        // console.log("success at 308"+result);
+        if (result) {
+          username = result;
+          //   console.log(result +"Result at line 307");
+        }
+        if (result == null) {
+          // ie. this userID doesn't exist yet  - to pass test, must handle this:
+          return res.send("Please create profile before adding exercise log");
+          // could easily generate userId and register User, but Not Required so sticking to requirements
+        }
+      }
+    });
+  }
+  // see if we have this username
+  if (!userId) {
+    getUserId(username, async function(err, result) {
+      if (err) console.log(err);
+      else {
+        // console.log("success at 308"+result);
+        if (result) {
+          userId = result.userId;
+          //   console.log(result +"Result at line 307");
+        }
+        if (result == null) {
+          // ie. this userID doesn't exist yet  - to pass test, must handle this:
+          return res.send("Please create profile before adding exercise log");
+          // could easily generate userId and register User, but Not Required so sticking to requirements
+        }
+      }
+    });
+  }
+  console.log("got id it is:", userId);
   // add the exercise
 
   await saveExercise(userId, newLog, async function(err, result) {
@@ -509,7 +538,7 @@ app.get("/api/exercise/log/:userId?/:_id?:from?/:to?/:limit?", async function(
   }
 
   var responseObject = {
-    _id: exerciseObject[0].id,
+    //_id: exerciseObject[0].id,
     username: exerciseObject[0].username,
     count: exerciseObject[0].count,
     log: exerciseObject[0].log
@@ -534,7 +563,9 @@ app.get("/api/exercise/log/:userId?/:_id?:from?/:to?/:limit?", async function(
 
 app.get("/api/dailyCounts/:userId?", async function(req, res) {
   var { userId } = req.query; // load userName in URL query ?userId=tara
-  var daysArray = [];
+  var daysArray = []; // will hold [date, number of events in each day, times that day]
+  var daysIndex = 0;
+
   await getUserLog(userId, async function(err, docs) {
     // defined at line 151 and can handle userId=null if so
     if (err) return res.send("error getting documents");
@@ -543,22 +574,61 @@ app.get("/api/dailyCounts/:userId?", async function(req, res) {
         console.log("warning - docs=null");
       } else {
         // exerciseObject = docs; //Object.entries(docs[1]);                 can use log.count too
+        console.log("docs[0].log look like this: ", docs[0].log[1].date);
 
-        for (const count in docs) {
-          //
-          daysArray.length == 0 && daysArray.push(count.time); //load first time in - each day has
-          if (daysArray[daysArray.length - 1].date == count.date)
-            daysArray.push(count.time);
-
-          // idea:
-          // have array of times represent each day within each slot of array of days
-          // to be cont
+        let preResultsResponse = docs[0].log;
+        console.log("pre results filter is ", preResultsResponse);
+        let resultsResponse = [];
+        for (var x = 0; x < preResultsResponse.length - 1; x++) {
+          if (x > 0 && resultsResponse[x - 1].date != resultsResponse[x].date) {
+            resultsResponse += [
+              preResultsResponse[x].date,
+              preResultsResponse[x].time
+            ];
+          }
+          if (x > 0 && resultsResponse[x - 1].date == resultsResponse[x].date) {
+            resultsResponse += ", " + preResultsResponse[x].time;
+          } else {
+            // this case is if x=0, just load first value
+            resultsResponse += [
+              preResultsResponse[x].date,
+              preResultsResponse[x].time
+            ];
+          }
         }
 
-        console.log("390 docs are found # of logs is " + daysArray);
+        //         let resultsResponse=preResultsResponse.reduce(cleanResults());
+
+        //          function cleanResults(doc) {
+        //            console.log("inside cleanResults ",doc);
+        //            return [doc.date, doc.time];
+        //          }
+
+        //         let resultsResponse = docs[0].log;
+        //         console.log("dig into results ", resultsResponse );
+        //         resultsResponse = resultsResponse.map(cleanResults());
+
+        //       daysArray.length == 0 && daysArray.push(docs.log[0].date); //load first date in
+        res.send(resultsResponse);
       }
+      //         docs.forEach((log, index) => {
+      //           //
+      //           if (daysArray.indexOf(docs[index].date) == -1) {
+      //           //   daysIndex++; // each new day gets new array slot
+      //           // }
+      //           // daysArray[daysIndex][1]++; // daily event counter
+      //           // daysArray[daysIndex][2].push(log.time); // 3rd slot of array is an array of times
+      //           //daysArray holds [date, number of events in each day, [times that day]]
+      //         //});
+
+      //         console.log("390 docs are found # of logs is " + daysArray);
+      //       }
     }
   });
+});
+
+app.get("/success", (req, res) => {
+  res.sendFile(process.cwd() + "/views/success.html");
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {

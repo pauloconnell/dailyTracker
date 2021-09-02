@@ -19,53 +19,70 @@
   <body>
     <div class="container">
       <center>
-        <h1 id="title">Exercise Tracker</h1>
+        <h1 id="title">EventTracker</h1>
         <br />
+        ***This page will input username/id and output results in format [date,
+        total number, [times]]
         <hr />
-        <span class="smooth"
-          >Simple app to create a user in the <b>database</b> with a unique
-          userID and store exercises. Back End <b>API</b> set up to be queried
-          with parameters as described at bottom of page.
-        </span>
+        <div class="smooth">
+          Your user is on the <b>database</b> with a unique userID and stores
+          events time and details.<br />
+          This page querries the back End <b>API</b> to present that data for
+          you.
+        </div>
       </center>
       <hr />
       <center>
-        Successful Tracking of your exercise!
+        <div id="displayResults">
+          Successful Tracking of your exercise!
+        </div>
 
-      
+        <center>
+          <h3>Get Data</h3>
+          <p><code>Use your unique userID or Username get details</code></p>
+        </center>
 
-        <form action="/api/exercise/add" method="post" id="form2">
-          <center>
-            <h3>Add exercises</h3>
-            <p><code>Use your unique userID to log your exercises</code></p>
-          </center>
+        <div class="form">
+          <big><b>Get your Results:</b></big>
+          <input id="uid" type="text" name="userId" placeholder="userId" />
           <input
-            id="uid"
+            id="successUserName"
+            name="uname"
             type="text"
-            name="userId"
-            placeholder="userId*"
-            required
+            placeholder="name"
           />
-          <input
-            id="desc"
-            type="text"
-            name="description"
-            placeholder="description*"
-          />
-          <input
-            id="dur"
-            type="text"
-            name="duration"
-            placeholder="duration* (mins.)"
-          />
-          <input
-            id="dat"
-            type="text"
-            name="date"
-            placeholder="date (yyyy-mm-dd)"
-          />
-          <input type="submit" value="Submit" />
-        </form>
+          <script>
+                     function resultsClicked() {
+                       //hit api to get data
+                      console.log("This click has been registered, about to fetch from API");
+
+                       let userName = document.getElementById("successUserName").value;
+                       let userid = document.getElementById("uid").value;
+
+                       if(userName){
+                         let myObject = await fetch("/api/dailyCounts/?userName=" + userName);
+                       }else if(userId){
+                          let myObject = await fetch("/api/dailyCounts/?userId=" + userId);
+                         }
+                       let myJson= await myObject.json();
+                       console.log(userName, myJson);
+                       //let myText = await myObject.text();
+                       let display = document.getElementsById("displayResults");
+
+                       display.innerHTML = myJson;
+
+
+                     }
+            document.getElementById("resultsButton").addEventListener("click", resultsClicked);
+          </script>
+          <button
+            type="button"
+            id="resultsButton"
+            onmousedown="resultsClicked()"
+          >
+            Submit
+          </button>
+        </div>
       </center>
       <hr />
       <center>
@@ -104,12 +121,5 @@
         </div>
       </center>
     </div>
-
-    <script>
-      const ws = new WebSocket("ws://localhost:8082");
-      ws.addEventListener("open", ()=>{
-        console.log("we are connected");
-      })
-    </script>
   </body>
 </html>

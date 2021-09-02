@@ -91,6 +91,18 @@ a {
 .form2{
   float:right;
 }
+.form{
+  vertical-align: middle;
+  margin: 25px;
+  padding: 15px;
+  background-color: #87D37C;
+  display: inline-block;
+  width: 100%;
+  max-width: 340px;
+  border-radius: 5px;
+  
+}
+
 
 .smooth{
   background:rgb(0,0,0,.7);
