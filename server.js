@@ -42,7 +42,7 @@ var logSchema = new mongoose.Schema({
       description: String,
       duration: Number,
       date: String,
-      time: Number
+      time: String
     }
   ]
 });
@@ -271,7 +271,6 @@ app.get("/api/exercise/users/", async function(req, res) {
 
 // this is where the exercise is logged
 app.post("/api/exercise/add", async function(req, res, next) {
-  var classDate;
   var dateString;
   var username;
   var { userId, description, duration, time, userName2 } = req.body;
@@ -287,24 +286,24 @@ app.post("/api/exercise/add", async function(req, res, next) {
     duration = 0;
   } else duration = parseInt(duration);
   console.log("Time entered is " + time);
-  
-  var d = new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles"})
-  //const date = new Date().toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' });
-//const time = new Date().toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' });
-console.log("new date is ",d);
+
+  var d = new Date().toLocaleString("en-US", {
+    timeZone: "America/Los_Angeles"
+  });
+
+  console.log("todays date is ", d);
   //classDate = d.toLocaleString();
+
   if (time == null || time == "") {
     time = d.substr(10);
-    console.log("sorting time ",d,time);
-    time = time.substring(0, 2);
-        console.log("sorting time ",d,time);
-    time = +time; // uniary opperator to covert to num
+    console.log("sorting time ", d, time);
+    // time = time.substring(0, 2);    if want hours only
   }
- // dateString = classDate.toString();
-console.log("sorting time ",d,time);
+  d = d.substr(0, 9);
+  console.log("sorting date ", d);
+
   console.log("this should be a string " + d);
-  if (d == "Invalid Date")
-    return res.send("invalid time - Please try again");
+  if (d == "Invalid Date") return res.send("invalid time - Please try again");
   var newLog = {
     id: userId,
     description: description,
