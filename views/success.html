@@ -38,7 +38,7 @@
         </div>
 
         <center>
-          <h3>Get Data</h3>
+          
           <p><code>Use your unique userID or Username get details</code></p>
         </center>
 
@@ -51,35 +51,8 @@
             type="text"
             placeholder="name"
           />
-          <script>
-                     function resultsClicked() {
-                       //hit api to get data
-                      console.log("This click has been registered, about to fetch from API");
 
-                       let userName = document.getElementById("successUserName").value;
-                       let userid = document.getElementById("uid").value;
-
-                       if(userName){
-                         let myObject = await fetch("/api/dailyCounts/?userName=" + userName);
-                       }else if(userId){
-                          let myObject = await fetch("/api/dailyCounts/?userId=" + userId);
-                         }
-                       let myJson= await myObject.json();
-                       console.log(userName, myJson);
-                       //let myText = await myObject.text();
-                       let display = document.getElementsById("displayResults");
-
-                       display.innerHTML = myJson;
-
-
-                     }
-            document.getElementById("resultsButton").addEventListener("click", resultsClicked);
-          </script>
-          <button
-            type="button"
-            id="resultsButton"
-            onmousedown="resultsClicked()"
-          >
+          <button type="button" id="resultsButton" >
             Submit
           </button>
         </div>
@@ -121,5 +94,41 @@
         </div>
       </center>
     </div>
+    <script>
+      function resultsClicked() {
+        //hit api to get data
+
+        let userName = document.getElementById("successUserName").value;
+        let userid = document.getElementById("uid").value;
+        console.log(
+          "This click has been registered, about to fetch from API",
+          userName,
+          userid
+        );
+        let display = document.getElementById("displayResults");
+        if (userName) {
+          let myObject = fetch("/api/dailyCounts/?userName=" + userName)
+            .then(response => {
+              return response.json();
+            })
+            .then(myJson => {
+              display.innerHTML = myJson;
+            });
+        }
+        if (userid) {
+          let myObject = fetch("/api/dailyCounts/?userId=" + userid)
+            .then(response => {
+              console.log("recieved from API",response);
+              return response.json();
+            })
+            .then(myJson => {
+              display.innerHTML = "myJson";
+            });
+        } else display.innerHTML = "Please enter correct userId or Username";
+      }
+      document
+        .getElementById("resultsButton")
+        .addEventListener("click", resultsClicked);
+    </script>
   </body>
 </html>
