@@ -149,27 +149,32 @@ async function getUserLog(id, done) {
   if (id == null) {
     // if no id querried, return all users
     console.log("id=null at line 146");
-    await exerciselogDB.find({}, { _id: 0 }, async function(err, data) {
+    await exerciselogDB.find({}, { _id: 0 }, async function(err, response) {
       if (err) {
         console.log(err);
         done(err);
       }
-      if (data) {
-        console.log("line 151 found " + JSON.stringify(data.log));
+      if (response) {
+        let data = response.data;
+        console.log("line 151 found " + response); //JSON.stringify(data.log));
         userLog = data;
         return done(null, userLog);
-      } else console.log("no data at line 158" + data);
+      } else console.log("no data at line 158");
     });
   } // if id:null closed
-  else {
+  if (id) {
     // else= we have id to search: (projection _id:0 prevents the _id from being displayed)
-    await exerciselogDB.find({ id: id }, { _id: 0 }, async function(err, data) {
+    await exerciselogDB.find({ id: id }, { _id: 0 }, async function(
+      err,
+      response
+    ) {
       if (err) {
         console.log(err);
         done(err);
       }
-      if (data) {
-        console.log("Line 178 got data for " + data[0].username);
+      if (response) {
+        let data = response.data;
+        console.log("Line 178 got data ", data, JSON.stringify(data));
         return done(null, data);
       } else console.log("no data at line 181");
     });
@@ -296,6 +301,7 @@ app.post("/api/exercise/add", async function(req, res, next) {
 
   if (time == null || time == "") {
     time = d.substr(10);
+    d = d.substr(0, 8);
     console.log("sorting time ", d, time);
     // time = time.substring(0, 2);    if want hours only
   }
@@ -394,7 +400,13 @@ app.get("/api/exercise/log/:userId?/:_id?:from?/:to?/:limit?", async function(
     }
   }
 
-  console.log(JSON.stringify(req.body) + "Line 357 from and to :" + from, to);
+  console.log(
+    "api/exercise/log " +
+      JSON.stringify(req.body) +  //note:will be empty if clicked link from index.html
+      "Line 357 from and to :" +
+      from,
+    to
+  );
   if (from) {
     // convert String(input always type=string) to Date
     var From = new Date(from);
@@ -573,12 +585,13 @@ app.get("/api/dailyCounts/:userId?", async function(req, res) {
         console.log("warning - docs=null");
       } else {
         // exerciseObject = docs; //Object.entries(docs[1]);                 can use log.count too
-        console.log("docs[0].log look like this: ", docs[0].log[1].date);
+        console.log("line 577 docs.log look like this: ", docs.log);
 
         let preResultsResponse = docs[0].log;
-        console.log("pre results filter is ", preResultsResponse);
+        console.log("pre results filter is ", preResultsResponse[3].date);
         let resultsResponse = [];
         for (var x = 0; x < preResultsResponse.length - 1; x++) {
+          // gather results into daily results
           if (x > 0 && resultsResponse[x - 1].date != resultsResponse[x].date) {
             resultsResponse += [
               preResultsResponse[x].date,
@@ -594,6 +607,7 @@ app.get("/api/dailyCounts/:userId?", async function(req, res) {
               preResultsResponse[x].time
             ];
           }
+          console.log("ResultResponse is ", resultsResponse);
         }
 
         //         let resultsResponse=preResultsResponse.reduce(cleanResults());
@@ -608,7 +622,7 @@ app.get("/api/dailyCounts/:userId?", async function(req, res) {
         //         resultsResponse = resultsResponse.map(cleanResults());
 
         //       daysArray.length == 0 && daysArray.push(docs.log[0].date); //load first date in
-        res.send(resultsResponse);
+        res.json(resultsResponse);
       }
       //         docs.forEach((log, index) => {
       //           //
