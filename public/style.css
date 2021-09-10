@@ -1,24 +1,23 @@
-
 * {
   box-sizing: border-box;
 }
 
 body {
-
-  margin:auto;
-  font-family:sans-serif;
+  margin: auto;
+  font-family: sans-serif;
   margin: 25px;
   color: blue;
   background-color: #f5f5f5;
-  background:url(https://res.cloudinary.com/pollie/image/upload/v1606099276/fitness_gyixik.png) left top no-repeat, url(https://res.cloudinary.com/pollie/image/upload/v1606077858/backgroundStocks_qvbkuh.jpg);
-  background-size:100%;
+  background: url(
+        https://res.cloudinary.com/pollie/image/upload/v1606099276/fitness_gyixik.png
+      )no-repeat,
+    url(https://res.cloudinary.com/pollie/image/upload/v1606077858/backgroundStocks_qvbkuh.jpg);
+  background-size: 100%;
 }
 
 h1 {
   font-weight: bold;
-  
 }
-
 
 p {
   max-width: 900px;
@@ -33,7 +32,6 @@ form {
   width: 100%;
   max-width: 340px;
   border-radius: 5px;
-  
 }
 
 input {
@@ -41,23 +39,22 @@ input {
   margin-bottom: 10px;
   padding: 5px;
   width: 100%;
-  height: 100%
+  height: 100%;
   border: 1px solid lightgrey;
   border-radius: 3px;
   font-size: 16px;
 }
 
-input[type=submit] {
+input[type="submit"] {
   font-size: 16px;
   border-radius: 3px;
   background-color: #E4F1FE;
   border: 2px solid grey;
   box-shadow: 2px 2px #999;
   cursor: pointer;
-  
 }
 
-input[type=submit]:hover {
+input[type="submit"]:hover {
   background-color: #FFFEC4;
 }
 
@@ -71,27 +68,25 @@ code {
 label {
   background-color: white;
   border: 2px solid black;
-  border-radius:5px;
-  border-margin:2px;
+  border-radius: 5px;
+  border-margin: 2px;
 }
 
 a {
-  color:white;
-  
+  color: white;
 }
 
 .bold {
   font-weight: bold;
 }
 
-
-.form1{
+.form1 {
   float: left;
 }
-.form2{
-  float:right;
+.form2 {
+  float: right;
 }
-.form{
+.form {
   vertical-align: middle;
   margin: 25px;
   padding: 15px;
@@ -100,29 +95,28 @@ a {
   width: 100%;
   max-width: 340px;
   border-radius: 5px;
-  
 }
 
-
-.smooth{
-  background:rgb(0,0,0,.7);
-  border-radius:6px;
-  font-size:1.2em;
-  color:white;
-  
-  
+.smooth {
+  background: rgb(0, 0, 0, 0.7);
+  border-radius: 6px;
+  font-size: 1.2em;
+  color: white;
 }
 
+#displayResults {
+  background: white;
+}
 
 #title {
-  background:rgb(0,0,0,.7);
-  border-radius:6px;
-  width:60%;
-  color:white;
+  background: rgb(0, 0, 0, 0.7);
+  border-radius: 6px;
+  width: 60%;
+  color: white;
 }
 
 #info {
-  background:rgb(0,0,0,.7);
-  border-radius:6px;
-  width:75%;
+  background: rgb(0, 0, 0, 0.7);
+  border-radius: 6px;
+  width: 75%;
 }
