@@ -146,7 +146,7 @@ async function getUserLog(id, done) {
   var userLog;
   var allUsers;
   console.log("line 134 id is " + id);
-  if (id == null) {
+  if (!id) {
     // if no id querried, return all users
     console.log("id=null at line 146");
     await exerciselogDB.find({}, { _id: 0 }, async function(err, response) {
@@ -155,10 +155,10 @@ async function getUserLog(id, done) {
         done(err);
       }
       if (response) {
-        let data = response.data;
+        //  let data = response.data;
         console.log("line 151 found " + response); //JSON.stringify(data.log));
-        userLog = data;
-        return done(null, userLog);
+        // userLog = data;
+        return done(null, response);
       } else console.log("no data at line 158");
     });
   } // if id:null closed
@@ -173,9 +173,9 @@ async function getUserLog(id, done) {
         done(err);
       }
       if (response) {
-        let data = response.data;
-        console.log("Line 178 got data ", data, JSON.stringify(data));
-        return done(null, data);
+        let data = response.json;
+        console.log("Line 178 got data ", response, data);
+        return done(null, response);
       } else console.log("no data at line 181");
     });
   }
@@ -402,7 +402,7 @@ app.get("/api/exercise/log/:userId?/:_id?:from?/:to?/:limit?", async function(
 
   console.log(
     "api/exercise/log " +
-      JSON.stringify(req.body) +  //note:will be empty if clicked link from index.html
+    JSON.stringify(req.body) + //note:will be empty if clicked link from index.html
       "Line 357 from and to :" +
       from,
     to
@@ -581,35 +581,15 @@ app.get("/api/dailyCounts/:userId?", async function(req, res) {
     // defined at line 151 and can handle userId=null if so
     if (err) return res.send("error getting documents");
     else {
-      if (docs == null || !docs) {
+      if (docs.length<1) {
         console.log("warning - docs=null");
       } else {
         // exerciseObject = docs; //Object.entries(docs[1]);                 can use log.count too
-        console.log("line 577 docs.log look like this: ", docs.log);
+        console.log("line 577 docs.log look like this: ", docs);
 
         let preResultsResponse = docs[0].log;
-        console.log("pre results filter is ", preResultsResponse[3].date);
-        let resultsResponse = [];
-        for (var x = 0; x < preResultsResponse.length - 1; x++) {
-          // gather results into daily results
-          if (x > 0 && resultsResponse[x - 1].date != resultsResponse[x].date) {
-            resultsResponse += [
-              preResultsResponse[x].date,
-              preResultsResponse[x].time
-            ];
-          }
-          if (x > 0 && resultsResponse[x - 1].date == resultsResponse[x].date) {
-            resultsResponse += ", " + preResultsResponse[x].time;
-          } else {
-            // this case is if x=0, just load first value
-            resultsResponse += [
-              preResultsResponse[x].date,
-              preResultsResponse[x].time
-            ];
-          }
-          console.log("ResultResponse is ", resultsResponse);
-        }
-
+        console.log("pre results filter is ", preResultsResponse);
+      
         //         let resultsResponse=preResultsResponse.reduce(cleanResults());
 
         //          function cleanResults(doc) {
@@ -622,7 +602,8 @@ app.get("/api/dailyCounts/:userId?", async function(req, res) {
         //         resultsResponse = resultsResponse.map(cleanResults());
 
         //       daysArray.length == 0 && daysArray.push(docs.log[0].date); //load first date in
-        res.json(resultsResponse);
+        console.log("docs[0].log", docs[0].log);
+        res.json(docs[0].log); //resultsResponse);
       }
       //         docs.forEach((log, index) => {
       //           //
