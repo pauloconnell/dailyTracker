@@ -581,7 +581,7 @@ app.get("/api/dailyCounts/:userId?", async function(req, res) {
     // defined at line 151 and can handle userId=null if so
     if (err) return res.send("error getting documents");
     else {
-      if (docs.length<1) {
+      if (docs.length < 1) {
         console.log("warning - docs=null");
       } else {
         // exerciseObject = docs; //Object.entries(docs[1]);                 can use log.count too
@@ -589,7 +589,7 @@ app.get("/api/dailyCounts/:userId?", async function(req, res) {
 
         let preResultsResponse = docs[0].log;
         console.log("pre results filter is ", preResultsResponse);
-      
+
         //         let resultsResponse=preResultsResponse.reduce(cleanResults());
 
         //          function cleanResults(doc) {
