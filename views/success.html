@@ -94,7 +94,7 @@
       </center>
     </div>
     <script>
-      function resultsClicked() {
+      async function resultsClicked() {
         //hit api to get data
 
         let userName = document.getElementById("successUserName").value;
@@ -106,56 +106,61 @@
         );
         let display = document.getElementById("displayResults");
         if (userName) {
-          let myObject = fetch("/api/dailyCounts/?userName=" + userName)
-            .then(response => {
-              return response.json();
-            })
-            .then(myJson => {
-              display.innerHTML = JSON.stringify(myJson);
-            });
-        }
-        if (userid) {
-          let myObject = fetch("/api/dailyCounts/?userId=" + userid).then(
-            response => {
-              console.log("recieved from API", response);
-              let data = response.data;
+          // NOT USING THIS YET --- BUILD OUT AFTER ID section built
 
-              let resultsResponse = [];
-              console.log("now in json", response, data);
-              for (var x = 0; x < data.length - 1; x++) {
-                // gather results into daily results
-                if (
-                  x > 0 &&
-                  resultsResponse[x - 1].date != resultsResponse[x].date
-                ) {
-                  resultsResponse += [
-                    preResultsResponse[x].date,
-                    preResultsResponse[x].time
-                  ];
-                }
-                if (
-                  x > 0 &&
-                  resultsResponse[x - 1].date == resultsResponse[x].date
-                ) {
-                  resultsResponse += ", " + preResultsResponse[x].time;
-                } else {
-                  // this case is if x=0, just load first value
-                  resultsResponse += [
-                    preResultsResponse[x].date,
-                    preResultsResponse[x].time
-                  ];
-                }
-                console.log("ResultResponse is ", resultsResponse);
-              }
+          let myObject = await fetch(
+            "/api/dailyCounts/?userName=" + userName
+          ).then(response => {
+            return response.data;
+          });
 
-              // myJson.forEach(ele=>{
-              //   if(ele)
-              //   <div>
-              // })
-              // buildResult.push()
-              display.innerHTML = JSON.stringify(myJson);
+          // complete this section to mimic action below
+
+          let sendResultsBack = myObject[0].log.map(ele => {
+            "<div>" + ele + "</div>";
+            console.log("about to display", sendRsultsBack);
+            display.innerHTML = sendResultsBack;
+          });
+
+          //             .then(myJson => {
+          //               console.log("about to send to front end",myJson);
+          //               display.innerHTML = myJson;
+          //             });
+        } else if (userid) {
+          let myObject = await fetch("/api/dailyCounts/?userId=" + userid);
+
+          let dataJSON = await myObject.json();
+
+          console.log("recieved from API", dataJSON);
+
+          let resultsResponse = [];
+          console.log("now in json", dataJSON);
+          for (var x = 0; x < dataJSON.length - 1; x++) {
+            // gather results into daily results
+            if (
+              x > 0 &&
+              resultsResponse[x - 1].date != resultsResponse[x].date
+            ) {
+              resultsResponse += [dataJSON[x].date, dataJSON[x].time];
             }
-          );
+            if (
+              x > 0 &&
+              resultsResponse[x - 1].date == resultsResponse[x].date
+            ) {
+              resultsResponse += ", " + dataJSON[x].time;
+            } else {
+              // this case is if x=0, just load first value
+              resultsResponse += [dataJSON[x].date, dataJSON[x].time];
+            }
+            console.log("ResultResponse is ", resultsResponse);
+          }
+
+          // myJson.forEach(ele=>{
+          //   if(ele)
+          //   <div>
+          // })
+          // buildResult.push()
+          display.innerHTML = resultsResponse;
         } else display.innerHTML = "Please enter correct userId or Username";
       }
       document
